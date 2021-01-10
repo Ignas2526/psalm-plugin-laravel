@@ -381,6 +381,17 @@ class Builder
      */
     public function first($columns = ['*']) { }
 
+
+    //
+    // Methods below are copied from Query/Builder.
+    // In Eloquent/Builder in __call, Laravel forwards calls to non-existing methods to the $this->query which is
+    // Query/Builder. It then returns $this, which is Eloquent/Builder. This means that in case of Eloquent/Builder,
+    // all Query/Builder methods will return Eloquent/Builder instance. Simplest way to replicate this behavior is to
+    // copy-paste all Query/Builder methods that are not defined in Eloquent/Builder and set appropriate return type.
+    // Query/Builder is used in other places so we can't change return types there.
+    //
+
+
     /**
      * @param  array|mixed  $columns
      * @return static
@@ -564,8 +575,14 @@ class Builder
      */
     public function orWhereColumn($first, $operator = null, $second = null) { }
 
-
-
+    /**
+     * @param  \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Query\Expression|string  $column
+     * @param  string  $direction
+     * @return static
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function orderBy($column, $direction = 'asc') { }
 
     /**
      * @param  string  $sql
@@ -956,14 +973,6 @@ class Builder
      */
     public function orHavingRaw($sql, array $bindings = []) { }
 
-    /**
-     * @param  \Closure|\Illuminate\Database\Query\Builder|\Illuminate\Database\Query\Expression|string  $column
-     * @param  string  $direction
-     * @return static
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function orderBy($column, $direction = 'asc') { }
 
     /**
      * @param  string  $column
@@ -1030,4 +1039,281 @@ class Builder
      * @return static
      */
     public function forPageAfterId($perPage = 15, $lastId = 0, $column = 'id') { }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder|\Closure  $query
+     * @param  bool  $all
+     * @return static
+     */
+    public function union($query, $all = false) { }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder|\Closure  $query
+     * @return static
+     */
+    public function unionAll($query) { }
+
+    /**
+     * @param  string|bool  $value
+     * @return static
+     */
+    public function lock($value = true) { }
+
+    /**
+     * @return static
+     */
+    public function lockForUpdate() { }
+
+    /**
+     * @return static
+     */
+    public function sharedLock() { }
+
+    /**
+     * @return string
+     */
+    public function toSql() { }
+
+    /**
+     * @param  array  $columns
+     * @return int
+     */
+    public function getCountForPagination($columns = ['*']) { }
+
+    /**
+     * @param  string  $column
+     * @param  string  $glue
+     * @return string
+     */
+    public function implode($column, $glue = '') { }
+
+    /**
+     * @return bool
+     */
+    public function exists() { }
+
+    /**
+     * @return bool
+     */
+    public function doesntExist() { }
+
+    /**
+     * @param  \Closure  $callback
+     * @return mixed
+     */
+    public function existsOr(Closure $callback) { }
+
+    /**
+     * @param  \Closure  $callback
+     * @return mixed
+     */
+    public function doesntExistOr(Closure $callback) { }
+
+    /**
+     * @param  string  $columns
+     * @return int
+     */
+    public function count($columns = '*') { }
+
+    /**
+     * @param  string  $column
+     * @return mixed
+     */
+    public function min($column) { }
+
+    /**
+     * @param  string  $column
+     * @return mixed
+     */
+    public function max($column) { }
+
+    /**
+     * @param  string  $column
+     * @return mixed
+     */
+    public function sum($column) { }
+
+    /**
+     * @param  string  $column
+     * @return mixed
+     */
+    public function avg($column) { }
+
+    /**
+     * @param  string  $column
+     * @return mixed
+     */
+    public function average($column) { }
+
+    /**
+     * @param  string  $function
+     * @param  array  $columns
+     * @return mixed
+     */
+    public function aggregate($function, $columns = ['*']) { }
+
+    /**
+     * @param  string  $function
+     * @param  array  $columns
+     * @return float|int
+     */
+    public function numericAggregate($function, $columns = ['*']) { }
+
+    /**
+     * @param  array  $values
+     * @return bool
+     */
+    public function insert(array $values) { }
+
+    /**
+     * @param  array  $values
+     * @return int
+     */
+    public function insertOrIgnore(array $values) { }
+
+    /**
+     * @param  array  $values
+     * @param  string|null  $sequence
+     * @return int
+     */
+    public function insertGetId(array $values, $sequence = null) { }
+
+    /**
+     * @param  array  $columns
+     * @param  \Closure|\Illuminate\Database\Query\Builder|string  $query
+     * @return int
+     */
+    public function insertUsing(array $columns, $query) { }
+
+    /**
+     * @param  array  $values
+     * @return int
+     */
+    public function update(array $values) { }
+
+    /**
+     * @param  array  $attributes
+     * @param  array  $values
+     * @return bool
+     */
+    public function updateOrInsert(array $attributes, array $values = []) { }
+
+    /**
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @param  array  $extra
+     * @return int
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function increment($column, $amount = 1, array $extra = []) { }
+
+    /**
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @param  array  $extra
+     * @return int
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function decrement($column, $amount = 1, array $extra = []) { }
+
+    /**
+     * @param  mixed  $id
+     * @return int
+     */
+    public function delete($id = null) { }
+
+    /**
+     * @return void
+     */
+    public function truncate() { }
+
+    /**
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function newQuery() { }
+
+    /**
+     * @param  mixed  $value
+     * @return \Illuminate\Database\Query\Expression
+     */
+    public function raw($value) { }
+
+    /**
+     * @return array
+     */
+    public function getBindings() { }
+
+    /**
+     * @return array
+     */
+    public function getRawBindings() { }
+
+    /**
+     * @param  array  $bindings
+     * @param  string  $type
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setBindings(array $bindings, $type = 'where') { }
+
+    /**
+     * @param  mixed  $value
+     * @param  string  $type
+     * @return $this
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function addBinding($value, $type = 'where') { }
+
+    /**
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @return $this
+     */
+    public function mergeBindings(self $query) { }
+
+    /**
+     * @return \Illuminate\Database\ConnectionInterface
+     */
+    public function getConnection() { }
+
+    /**
+     * @return \Illuminate\Database\Query\Processors\Processor
+     */
+    public function getProcessor() { }
+
+    /**
+     * @return \Illuminate\Database\Query\Grammars\Grammar
+     */
+    public function getGrammar() { }
+
+    /**
+     * @return static
+     */
+    public function useWritePdo() { }
+
+    /**
+     * @param  array  $properties
+     * @return static
+     */
+    public function cloneWithout(array $properties) { }
+
+    /**
+     * @param  array  $except
+     * @return static
+     */
+    public function cloneWithoutBindings(array $except) { }
+
+    /**
+     * @return static
+     */
+    public function dump() { }
+
+    /**
+     * @return void
+     */
+    public function dd() { }
+
 }
