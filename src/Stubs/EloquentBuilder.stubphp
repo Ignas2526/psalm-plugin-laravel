@@ -9,8 +9,6 @@ use Illuminate\Support\Traits\ForwardsCalls;
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
  * @property-read HigherOrderBuilderProxy $orWhere
- *
- * @mixin \Illuminate\Database\Query\Builder
  */
 class Builder
 {
@@ -388,7 +386,14 @@ class Builder
     // Query/Builder. It then returns $this, which is Eloquent/Builder. This means that in case of Eloquent/Builder,
     // all Query/Builder methods will return Eloquent/Builder instance. Simplest way to replicate this behavior is to
     // copy-paste all Query/Builder methods that are not defined in Eloquent/Builder and set appropriate return type.
+    //
     // Query/Builder is used in other places so we can't change return types there.
+    //
+    // This Laravel implementation does make some Query\Builder methods no-op and could be a source for obscure bugs.
+    // For example, calling newQuery() from Eloquent/Builder is pointless; aggregate() does execute query but results
+    // cannot be accessed. For this reason, such methods will be labeled with @deprecated. The argument being that it
+    // is most likely a bug.
+    // NOTE: some Eloquent/Builder methods are passthru. See protected $passthru in Eloquent/Builder.
     //
 
 
@@ -554,7 +559,7 @@ class Builder
     /**
      * @param  array  $wheres
      * @param  array  $bindings
-     * @return void
+     * @return static
      */
     public function mergeWheres($wheres, $bindings) { }
 
@@ -798,7 +803,8 @@ class Builder
     public function whereNested(\Closure $callback, $boolean = 'and') { }
 
     /**
-     * @return \Illuminate\Database\Query\Builder
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function forNestedWhere() { }
 
@@ -843,7 +849,7 @@ class Builder
      * @param  bool  $not
      * @return static
      */
-    public function addWhereExistsQuery(self $query, $boolean = 'and', $not = false) { }
+    public function addWhereExistsQuery($query, $boolean = 'and', $not = false) { }
 
     /**
      * @param  array  $columns
@@ -1070,108 +1076,126 @@ class Builder
     public function sharedLock() { }
 
     /**
+     * Is passthru.
      * @return string
      */
     public function toSql() { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  array  $columns
-     * @return int
+     * @return static
      */
     public function getCountForPagination($columns = ['*']) { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  string  $column
      * @param  string  $glue
-     * @return string
+     * @return static
      */
     public function implode($column, $glue = '') { }
 
     /**
+     * Is passthru.
      * @return bool
      */
     public function exists() { }
 
     /**
+     * Is passthru.
      * @return bool
      */
     public function doesntExist() { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  \Closure  $callback
-     * @return mixed
+     * @return static
      */
-    public function existsOr(Closure $callback) { }
+    public function existsOr(\Closure $callback) { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  \Closure  $callback
-     * @return mixed
+     * @return static
      */
-    public function doesntExistOr(Closure $callback) { }
+    public function doesntExistOr(\Closure $callback) { }
 
     /**
+     * Is passthru.
      * @param  string  $columns
      * @return int
      */
     public function count($columns = '*') { }
 
     /**
+     * Is passthru.
      * @param  string  $column
      * @return mixed
      */
     public function min($column) { }
 
     /**
+     * Is passthru.
      * @param  string  $column
      * @return mixed
      */
     public function max($column) { }
 
     /**
+     * Is passthru.
      * @param  string  $column
      * @return mixed
      */
     public function sum($column) { }
 
     /**
+     * Is passthru.
      * @param  string  $column
      * @return mixed
      */
     public function avg($column) { }
 
     /**
+     * Is passthru.
      * @param  string  $column
      * @return mixed
      */
     public function average($column) { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  string  $function
      * @param  array  $columns
-     * @return mixed
+     * @return static
      */
     public function aggregate($function, $columns = ['*']) { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  string  $function
      * @param  array  $columns
-     * @return float|int
+     * @return static
      */
     public function numericAggregate($function, $columns = ['*']) { }
 
     /**
+     * Is passthru.
      * @param  array  $values
      * @return bool
      */
     public function insert(array $values) { }
 
     /**
+     * Is passthru.
      * @param  array  $values
      * @return int
      */
     public function insertOrIgnore(array $values) { }
 
     /**
+     * Is passthru.
      * @param  array  $values
      * @param  string|null  $sequence
      * @return int
@@ -1179,6 +1203,7 @@ class Builder
     public function insertGetId(array $values, $sequence = null) { }
 
     /**
+     * Is passthru.
      * @param  array  $columns
      * @param  \Closure|\Illuminate\Database\Query\Builder|string  $query
      * @return int
@@ -1186,74 +1211,45 @@ class Builder
     public function insertUsing(array $columns, $query) { }
 
     /**
-     * @param  array  $values
-     * @return int
-     */
-    public function update(array $values) { }
-
-    /**
      * @param  array  $attributes
      * @param  array  $values
-     * @return bool
+     * @return static
      */
     public function updateOrInsert(array $attributes, array $values = []) { }
 
     /**
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
-     * @return int
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function increment($column, $amount = 1, array $extra = []) { }
-
-    /**
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
-     * @return int
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function decrement($column, $amount = 1, array $extra = []) { }
-
-    /**
-     * @param  mixed  $id
-     * @return int
-     */
-    public function delete($id = null) { }
-
-    /**
-     * @return void
+     * @return static
      */
     public function truncate() { }
 
     /**
-     * @return \Illuminate\Database\Query\Builder
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function newQuery() { }
 
     /**
-     * @param  mixed  $value
-     * @return \Illuminate\Database\Query\Expression
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function raw($value) { }
 
     /**
+     * Is passthru.
      * @return array
      */
     public function getBindings() { }
 
     /**
-     * @return array
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function getRawBindings() { }
 
     /**
      * @param  array  $bindings
      * @param  string  $type
-     * @return $this
+     * @return static
      *
      * @throws \InvalidArgumentException
      */
@@ -1262,7 +1258,7 @@ class Builder
     /**
      * @param  mixed  $value
      * @param  string  $type
-     * @return $this
+     * @return static
      *
      * @throws \InvalidArgumentException
      */
@@ -1270,22 +1266,25 @@ class Builder
 
     /**
      * @param  \Illuminate\Database\Query\Builder  $query
-     * @return $this
+     * @return $static
      */
-    public function mergeBindings(self $query) { }
+    public function mergeBindings($query) { }
 
     /**
+     * Is passthru.
      * @return \Illuminate\Database\ConnectionInterface
      */
     public function getConnection() { }
 
     /**
-     * @return \Illuminate\Database\Query\Processors\Processor
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function getProcessor() { }
 
     /**
-     * @return \Illuminate\Database\Query\Grammars\Grammar
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
+     * @return static
      */
     public function getGrammar() { }
 
@@ -1295,19 +1294,22 @@ class Builder
     public function useWritePdo() { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  array  $properties
      * @return static
      */
     public function cloneWithout(array $properties) { }
 
     /**
+     * @deprecated In Eloquent/Builder is no-op. Call after getQuery().
      * @param  array  $except
      * @return static
      */
     public function cloneWithoutBindings(array $except) { }
 
     /**
-     * @return static
+     * Is passthru.
+     * @return \Illuminate\Database\Query\Builder
      */
     public function dump() { }
 
@@ -1315,5 +1317,4 @@ class Builder
      * @return void
      */
     public function dd() { }
-
 }
