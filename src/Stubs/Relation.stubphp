@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Traits\ForwardsCalls;
 
 /**
- * @template TRelatedModel
- * @mixin \Illuminate\Database\Eloquent\Builder<TRelatedModel>
- */
+* @template TRelatedModel of Model
+* @mixin \Illuminate\Database\Eloquent\Builder<TRelatedModel>
+*/
 abstract class Relation
 {
     use ForwardsCalls, Macroable {
@@ -22,85 +22,29 @@ abstract class Relation
     }
 
     /**
-     * The Eloquent query builder instance.
-     *
-     * @var \Illuminate\Database\Eloquent\Builder
-     * @psalm-var \Illuminate\Database\Eloquent\Builder<TRelatedModel>
+     * @param  \Closure  $callback
+     * @return mixed
      */
-    protected $query;
+    public static function noConstraints(Closure $callback) { }
 
     /**
-     * The parent model instance.
-     *
-     * @var \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Collection<TRelatedModel>
      */
-    protected $parent;
+    public function getEager() { }
 
     /**
-     * The related model instance.
-     *
-     * @var \Illuminate\Database\Eloquent\Model
-     * @psalm-var TRelatedModel
-     */
-    protected $related;
-
-    /**
-     * Create a new relation instance.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @return void
-     */
-    public function __construct(Builder $query, Model $parent)
-    {
-        $this->query = $query;
-        $this->parent = $parent;
-        $this->related = $query->getModel();
-
-        $this->addConstraints();
-    }
-
-    /**
-     * Get the relationship for eager loading.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     * @psalm-return \Illuminate\Database\Eloquent\Collection<TRelatedModel>
-     */
-    public function getEager()
-    {
-        return $this->get();
-    }
-
-    /**
-     * Execute the query as a "select" statement.
-     *
      * @param  array  $columns
-     * @return \Illuminate\Database\Eloquent\Collection
-     * @psalm-return \Illuminate\Database\Eloquent\Collection<TRelatedModel>
+     * @return \Illuminate\Database\Eloquent\Collection<TRelatedModel>
      */
-    public function get($columns = ['*'])
-    {
-        return $this->query->get($columns);
-    }
+    public function get($columns = ['*']) { }
 
     /**
-     * Get the underlying query for the relation.
-     *
      * @return \Illuminate\Database\Eloquent\Builder<TRelatedModel>
      */
-    public function getQuery()
-    {
-        return $this->query;
-    }
+    public function getQuery() { }
 
     /**
-     * Get the related model of the relation.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     * @psalm-return TRelatedModel
+     * @return TRelatedModel
      */
-    public function getRelated()
-    {
-        return $this->related;
-    }
+    public function getRelated() { }
 }
