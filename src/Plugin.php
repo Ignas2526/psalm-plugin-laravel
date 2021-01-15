@@ -9,6 +9,7 @@ use Psalm\LaravelPlugin\ReturnTypeProvider\ModelReturnTypeProvider;
 use Psalm\LaravelPlugin\ReturnTypeProvider\PathHelpersReturnTypeProvider;
 use Psalm\LaravelPlugin\ReturnTypeProvider\RelationReturnTypeProvider;
 use Psalm\LaravelPlugin\ReturnTypeProvider\UrlReturnTypeProvider;
+use Psalm\LaravelPlugin\ReturnTypeProvider\BuilderReturnTypeProvider;
 use Psalm\Plugin\PluginEntryPointInterface;
 use Psalm\Plugin\RegistrationInterface;
 use SimpleXMLElement;
@@ -49,14 +50,22 @@ class Plugin implements PluginEntryPointInterface
         $registration->registerHooksFromClass(ReturnTypeProvider\AppReturnTypeProvider::class);
         require_once 'AppInterfaceProvider.php';
         $registration->registerHooksFromClass(AppInterfaceProvider::class);
+        
         require_once 'PropertyProvider/ModelPropertyProvider.php';
         $registration->registerHooksFromClass(PropertyProvider\ModelPropertyProvider::class);
+        
         require_once 'ReturnTypeProvider/UrlReturnTypeProvider.php';
         $registration->registerHooksFromClass(UrlReturnTypeProvider::class);
+        
         require_once 'ReturnTypeProvider/ModelReturnTypeProvider.php';
         $registration->registerHooksFromClass(ModelReturnTypeProvider::class);
+
+        require_once 'ReturnTypeProvider/BuilderReturnTypeProvider.php';
+        $registration->registerHooksFromClass(BuilderReturnTypeProvider::class);
+
         require_once 'ReturnTypeProvider/RelationReturnTypeProvider.php';
         $registration->registerHooksFromClass(RelationReturnTypeProvider::class);
+        
         require_once 'ReturnTypeProvider/PathHelpersReturnTypeProvider.php';
         $registration->registerHooksFromClass(PathHelpersReturnTypeProvider::class);
 
@@ -147,6 +156,12 @@ class Plugin implements PluginEntryPointInterface
         \Illuminate\Filesystem\Filesystem $fake_filesystem,
         string $cache_dir
     ) : void {
+        // TODO: get rid of all the manual code and use \Barryvdh\LaravelIdeHelper\ like in getViewFactory
+        @unlink($cache_dir . 'models.stubphp');
+        $models = file_get_contents(dirname(__DIR__, 4). '/_ide_helper_models.php');
+        file_put_contents($cache_dir . 'models.stubphp', $models);
+        return;
+        
         $migrations_folder = dirname(__DIR__, 4) . '/database/migrations/';
 
         $project_analyzer = \Psalm\Internal\Analyzer\ProjectAnalyzer::getInstance();
