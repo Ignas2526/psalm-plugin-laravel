@@ -37,28 +37,28 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public static function query() { }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newQuery() { }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newModelQuery() { }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newQueryWithoutRelationships() { }
 
     /**
      * @param  \Illuminate\Database\Eloquent\Builder  $builder
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function registerGlobalScopes($builder) { }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newQueryWithoutScopes() { }
 
@@ -66,19 +66,19 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query instance without a given scope.
      *
      * @param  \Illuminate\Database\Eloquent\Scope|string  $scope
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newQueryWithoutScope($scope) { }
 
     /**
      * @param  array|int  $ids
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newQueryForRestoration($ids) { }
 
     /**
      * @param  \Illuminate\Database\Query\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder<$this>
+     * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     public function newEloquentBuilder($query) { }
 }
